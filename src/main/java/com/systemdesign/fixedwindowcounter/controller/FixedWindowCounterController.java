@@ -4,7 +4,6 @@ import com.systemdesign.fixedwindowcounter.dto.response.FixedWindowCounterProfil
 import com.systemdesign.fixedwindowcounter.dto.response.FixedWindowCounterResponse;
 import com.systemdesign.fixedwindowcounter.service.FixedWindowCounterService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,15 +19,13 @@ public class FixedWindowCounterController {
     private final FixedWindowCounterService fixedWindowCounterService;
 
     @GetMapping
-    public ResponseEntity<FixedWindowCounterProfileResponse> findAllFixedWindowCounter() {
-        List<FixedWindowCounterResponse> counters = fixedWindowCounterService.findAllFixedWindowCounter();
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(FixedWindowCounterProfileResponse.from(counters));
+    public ResponseEntity<List<FixedWindowCounterResponse>> findAllFixedWindowCounter() {
+        return ResponseEntity.status(OK)
+                .body(fixedWindowCounterService.findAllFixedWindowCounter());
     }
 
     @PostMapping
-    public ResponseEntity<FixedWindowCounterResponse> createFixedWindowCounter(
-    ) {
+    public ResponseEntity<FixedWindowCounterProfileResponse> createFixedWindowCounter() {
         return ResponseEntity.status(CREATED)
                 .body(fixedWindowCounterService.createFixedWindowCounter());
     }

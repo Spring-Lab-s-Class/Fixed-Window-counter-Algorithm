@@ -1,5 +1,6 @@
 package com.systemdesign.fixedwindowcounter.service;
 
+import com.systemdesign.fixedwindowcounter.dto.response.FixedWindowCounterProfileResponse;
 import com.systemdesign.fixedwindowcounter.dto.response.FixedWindowCounterResponse;
 import com.systemdesign.fixedwindowcounter.exception.RateLimitExceededException;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,8 @@ public class FixedWindowCounterService {
     private final static long FIXED_WINDOW_MAX_REQUEST = 1000; // 최대 요청 허용 수
     private final static long FIXED_WINDOW_DURATION = 60; // 60초
 
-    public FixedWindowCounterResponse createFixedWindowCounter() {
-        String redisKey = generateKey();
+    public FixedWindowCounterProfileResponse createFixedWindowCounter() {
+        String redisKey = generateRedisKey();
         Long currentCount = redisTemplate.opsForValue().increment(redisKey, 1);
 
         if (currentCount == 1) {
@@ -38,11 +39,12 @@ public class FixedWindowCounterService {
         }
 
         if (currentCount > FIXED_WINDOW_MAX_REQUEST) {
-            log.error("Rate limit exceeded. key: {}", redisKey);
+            log.debug("Rate limit exceeded. key: {}", redisKey);
             throw new RateLimitExceededException(COMMON_TOO_MANY_REQUESTS);
         }
 
-        return FixedWindowCounterResponse.from(redisKey, currentCount);
+        List<FixedWindowCounterResponse> counterResponses = List.of(FixedWindowCounterResponse.from(redisKey, currentCount));
+        return FixedWindowCounterProfileResponse.from(counterResponses);
     }
 
     public List<FixedWindowCounterResponse> findAllFixedWindowCounter() {
@@ -62,14 +64,15 @@ public class FixedWindowCounterService {
             log.info("rawValue: {}", rawValue);
 
             if (rawValue instanceof Long requestCount) {
-                responses.add(FixedWindowCounterResponse.from(key, requestCount));
+                String windowKey = key.substring(FIXED_WINDOW_KEY.length());
+                responses.add(FixedWindowCounterResponse.from(windowKey, requestCount));
                 log.info("responses: {}", responses.size());
             }
         }
         return responses;
     }
 
-    private String generateKey() {
+    private String generateRedisKey() {
         long windowStartTimestamp = System.currentTimeMillis() / (FIXED_WINDOW_DURATION * 1000) * (FIXED_WINDOW_DURATION * 1000);
         log.info("windowStartTimestamp: {}", windowStartTimestamp);
         return FIXED_WINDOW_KEY + windowStartTimestamp;
