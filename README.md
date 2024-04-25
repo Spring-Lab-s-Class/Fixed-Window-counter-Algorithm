@@ -67,8 +67,9 @@
 
 
 ``` Http
-post /fixed-window-counter
+POST /fixed-window-counter
 ```
+
 <br/>
 
 ### 2️⃣ 고정 윈도 카운터 조회 API

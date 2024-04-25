@@ -28,7 +28,6 @@ public class FixedWindowCounterService {
     private final static long FIXED_WINDOW_MAX_REQUEST = 1000; // 최대 요청 허용 수
     private final static long FIXED_WINDOW_DURATION = 60; // 60초
 
-
     public FixedWindowCounterResponse createFixedWindowCounter() {
         String redisKey = generateKey();
         Long currentCount = redisTemplate.opsForValue().increment(redisKey, 1);
