@@ -39,7 +39,7 @@
 ├── dto 패키지
 │    └── response 패키지
 │          └── FixedWindowCounterResponse.class
-│          └── FixedWindowCounterResponseList.class
+│          └── FixedWindowCounterResponseProfileREsponse.class
 │
 ├── exception 패키지
 │    └── RateException.class
